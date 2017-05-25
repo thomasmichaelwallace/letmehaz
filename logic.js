@@ -1,3 +1,5 @@
+const readline = require('readline');
+
 const verbose = false;
 const log = (string, show = verbose) => {
   if (verbose) {
@@ -14,6 +16,7 @@ const calc = {
   },
   o: { little: 1.2, light: 1.375, moderate: 1.55, heavy: 1.725, extreme: 1.9 },
   M: v => (-0.0964286 * Math.pow(v, 3)) + (2.95536 * Math.pow(v, 2)) - (30.6679 * v) + 117.371,
+  // M: v => 3.5,
 
   // bmr values
   B: (c, kh, kw, ky, h, w, y, d) => c + (kh * h) + (kw * w) + (ky * y) - d,
@@ -108,15 +111,58 @@ const qs = [
   // { w: 53, v: 10.0, t: 45 },
   // { w: 52, v: 9.50, t: 45 },
   // { w: 52, v: 9.00, t: 45 },
-  { w: 56.6, v: 10.0, t: 60 }
+  // { w: 56.6, v: 9.38, t: 30 },
+  // { w: 56.6, v: 9.43, t: 30.5 },
+  // { w: 56.3, v: 10.0, t: 40 },
+  // { w: 56.3, v: 0, t: 60 }
+  { w: 58.6, v: 9.5, t: 60 }
 ]
 
-qs.forEach(q => {
-  const { w, v, t } = q;
-  const ts = rs.map(r => Math.ceil(r * v));
-  tt = ts.reduce((s, t) => s + t);
-  console.log(`${q.w}kg, ${q.t}min at ${q.v} -> ${ts} = ${(tt / 60).toFixed(2)}hrs`);
-  snickers(w, v, t);
-})
+// qs.forEach(q => {
+//   const { w, v, t } = q;
+//   const ts = rs.map(r => Math.ceil(r * v));
+//   tt = ts.reduce((s, t) => s + t);
+//   console.log(`${q.w}kg, ${q.t}min at ${q.v} -> ${ts} = ${(tt / 60).toFixed(2)}hrs`);
+//   snickers(w, v, t);
+// })
 
 // qs.forEach(q => console.log(`- *x/x*: ${q.w}kg, ${q.t}mins @ ${q.v}min/miles`));
+
+
+const linein = prompt => new Promise((res, rej) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt
+  })
+  rl
+    .on('line', line => {
+      rl.close();
+      return res(line.trim())
+    })
+    .prompt()
+});
+
+let options = { w: 0, v: 0, t: 0 }
+linein('Weight > ')
+  .then((weight) => {
+    options.w = weight;
+    return linein('Speed > ');
+  })
+  .then((speed) => {
+    options.v = speed;
+    return linein('Time > ')
+  })
+  .then((time) => {
+    options.t = time;
+    console.log(options);
+    return Promise.resolve(options);
+  })
+  .then((q) => {
+    const { w, v, t } = q;
+    const ts = rs.map(r => Math.ceil(r * v));
+    tt = ts.reduce((s, t) => s + t);
+    console.log(`${q.w}kg, ${q.t}min at ${q.v} -> ${ts} = ${(tt / 60).toFixed(2)}hrs`);
+    snickers(w, v, t);
+  })
+  .catch((e => console.error(JSON.stringify(e))));
