@@ -98,7 +98,7 @@ const snickers = (w, v, t) => {
   console.log(`${Sca.toFixed(2)} bars ± ${(Scb * 100).toFixed(2)}%`);
 }
 
-const rs = [ 3.3, 3.4, 3.7 ]; // [ 3.1, 3.7, 4.2 ];
+const rs = [ 8.0, 6.8, 5.1 ];
 
 const qs = [
   // { w: 60, v: 10.0, t: 30 },
